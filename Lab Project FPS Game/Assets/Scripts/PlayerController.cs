@@ -27,6 +27,7 @@ public class PlayerController : MonoBehaviour
 	private CharacterController cc; // Reference to the CharacterController component on the gameobject this script is attached to.
 	private Camera _camera; // Reference to a camera.
 	[SerializeField] C4 myC4; // Reference to the C4 the player has placed and can detonate.
+	[SerializeField] IInteractable interactionObject; // Reference to an interactable object.
 	
 	// Recall: Start() is called a single time when this script first enters the game world. It runs after Awake() but before the first Update().
 	private void Start()
@@ -58,6 +59,17 @@ public class PlayerController : MonoBehaviour
 		{
 			// Trigger the C4 detonation.
 			myC4.TriggerC4();
+		}
+
+		// Check if the E button was pressed this frame.
+		if (Input.GetKeyDown(KeyCode.E))
+		{
+			// If the current interaction object is not null, we can proceed.
+			if (interactionObject != null)
+			{
+				// Interact with the object.
+				interactionObject.Interact();
+			}
 		}
 	}
 
@@ -118,5 +130,27 @@ public class PlayerController : MonoBehaviour
 	{
 		// Call the Shoot() method on the Weapon, allowing it to decide if and how it fires.
 		equippedWeapon.Shoot();
+	}
+
+	// Called when something enters the Player's trigger collider.
+    private void OnTriggerEnter(Collider other)
+    {
+		// Check to see if the object implements IInteractable.
+		if (other.GetComponent<IInteractable>() != null)
+		{
+			// Set this object to the Player's interaction object.
+			interactionObject = other.GetComponent<IInteractable>();
+		}
+    }
+
+	// Called when something exits the Player's trigger collider.
+	private void OnTriggerExit(Collider other)
+	{
+		// Check to see if the object implements IInteractable.
+		if (other.GetComponent<IInteractable>() != null)
+		{
+			// Set the Player's interaction object to null.
+			interactionObject = null;
+		}
 	}
 }
