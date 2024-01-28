@@ -71,6 +71,16 @@ public class PlayerController : MonoBehaviour
 				interactionObject.Interact();
 			}
 		}
+
+		// Reload the currently equipped weapon.
+		if (Input.GetKeyDown(KeyCode.R))
+		{
+			// Notice we will attempt to load in all the ammo the player is carrying.
+			// This is because the player doesn't know how many more rounds the gun can hold.
+			// Notice we're using Reload() like an int. So we will subtract the returned result from currentAmmo.
+			// Remember it returns how many rounds we used, so we'll subtract the player's ammo stash by that amount.
+			currentAmmo -= equippedWeapon.Reload(currentAmmo);
+		}
 	}
 
 	// Method to add ammo picked up to the player's stash of carried ammo.

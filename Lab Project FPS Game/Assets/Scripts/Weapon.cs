@@ -53,34 +53,56 @@ public abstract class Weapon : MonoBehaviour
         }
     }
 
-    // Reload the weapon.
-    // NOTE: Change all of this to instead return the number of rounds used so when the player reloads it can subtract that many rounds from their inventory.
+    // New modified method to reload the weapon which returns how many rounds were inserted.
+    // NOTE: Because it returns an int, we can use it like an int in any calculation.
+    // For example: playerAmmo -= Reload(5); is valid. It will be seen as an int and not a method.
     public virtual int Reload(int rounds)
     {
-        // Check to see if more bullets can be put into the weapon.
-        if (currentBullets < maxBullets)
-        {
-            // How many bullets can be added to the weapon.
-            // NOTE: This needs to be fixed. What if the gun has 20/30 rounds and you try to add only 5? It will say you used 10.
-            int roundsUsed = maxBullets - currentBullets;
-            // The number of rounds from the number of rounds attemtped to be added that weren't added.
-            // NOTE: This needs to be fixed. What if you tried to add 5, it said you used 10 (above), now it will say you have -5 left over.
-            int roundsLeftOver = rounds - roundsUsed;
+        int roundsThatCouldBeInserted;
+        // There are a lot of ways to do this. Let's just have it return how many rounds were added into the gun.
 
-            // If the bullets added exceeds the maximum capacity, set the current loaded amount to the max.
-            if (currentBullets > maxBullets)
-            {
-                // Set current rounds loaded to the max.
-                currentBullets = maxBullets;
-            }
-            // Return how many rounds didn't get used.
-            return roundsLeftOver;
+        // First let's make sure the gun isn't already full (meaning full magazine plus 1 in the chamber).
+        if (currentBullets > maxBullets)
+        {
+            // Do nothing
         }
-        // This part is called if the weapon is already loaded with the maximum number of rounds.
         else
         {
-            // Return the number of rounds attempted to be put in the weapon.
-            return rounds;
+
+            // Find out how many rounds could be inserted into the gun.
+            // First check to see if it's completely empty.
+            if (currentBullets == 0)
+            {
+                // If it's completely empty, changing mags would mean we can insert the maxBullets.
+                roundsThatCouldBeInserted = maxBullets - currentBullets;
+            }
+            // If the gun has at least one bullet in it, when we reload there will still be one in the chamber.
+            // So we can insert (max + 1) - current.
+            else
+            {
+                // maxBullets would be 1 more than normal (bullet in chamber) minus the currentBullets.
+                roundsThatCouldBeInserted = (maxBullets + 1) - currentBullets;
+            }
+            // Now that we know how many rounds could be inserted, let's find out how many we will actually insert.
+            // If the rounds attempted to be loaded is less than or equal to the roundsThatCouldBeInserted, just use them all.
+            if (rounds <= roundsThatCouldBeInserted)
+            {
+                // Add the new rounds to the gun.
+                currentBullets += rounds;
+                // We'll just return "rounds" as how many got loaded in since we used them all.
+                return rounds;
+            }
+            // Now we need to take into account the situation if the player is trying to insert more rounds than the gun can accept.
+            else
+            {
+                // Since the gun can accept less rounds than we're passing in, we know we're going to put in all
+                // the rounds that could possibly be inserted, so we'll return roundsThatCouldBeInserted.
+                // Add the new bullets to the gun.
+                currentBullets += roundsThatCouldBeInserted;
+                return roundsThatCouldBeInserted;
+            }
         }
+        // To prevent any possible errors, we return 0 if none of the above logic works correctly.
+        return 0;
     }
 }
