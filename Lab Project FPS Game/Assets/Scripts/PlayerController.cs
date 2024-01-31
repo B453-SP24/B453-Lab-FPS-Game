@@ -45,7 +45,11 @@ public class PlayerController : MonoBehaviour
 	{
 		// Here we call Move() every single frame which checks for movement and applies it if necessary.
 		// NOTE: We could also check for input in Update() and call the method depending on input, or we can call the method every frame in Update() and have the input checking in the method like we do here. There is no performance difference.
-		Move();
+		if (!PauseMenu.instance.isPaused)
+		{
+            Move();
+        }
+		
 
 		// Checking each frame to see if the left mouse click is pressed AND making sure a Weapon is actually equipped.
 		if (Input.GetMouseButtonDown(0) && equippedWeapon != null)
